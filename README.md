@@ -39,8 +39,7 @@ Postman is a popular tool that provides an easy-to-use interface to send HTTP re
 7. In environment, input _client id_, _client secret_, _my bim account name_ with __account name__, and _my test project name_ as __project name__
 
 
-   <p align="center"><img src="../help/tutorials-env.png" width="800" ></p> 
-   <p align="center"><img src="../help/proj-folder.png" width="800" ></p>  
+   <p align="center"><img src="./help/apiref-env.png" width="800" ></p>  
 
 8. In context menu of collection >> **Edit**, switch to the tab **Authorization**. Click **Get New Access Token**, input the variables as below:
 
@@ -64,7 +63,7 @@ Postman is a popular tool that provides an easy-to-use interface to send HTTP re
  
  9. Click **Request Token**, it will direct to login Autodesk account, after it succeeds, the token will be generated. Click **Use Token**. Then, click **Update** to close the window of **Edit**
 
-   <p align="center"><img src="../help/token.png" width="600" ></p> 
+   <p align="center"><img src="./help/token.png" width="600" ></p> 
    
    RFI API requires to work with 3-legged token. This collection takes **[Inheriting auth](https://learning.getpostman.com/docs/postman/sending-api-requests/authorization/#inheriting-auth)** to apply 3-legged token to every endpoint in the collection automatically, which means it does not need to input the token in the header explicitly.
 
@@ -72,7 +71,7 @@ Postman is a popular tool that provides an easy-to-use interface to send HTTP re
 
 1. Assume the steps of **Setup** have been performed. The access token is ready.
 2. Run the scripts in the folder of **Run Firstly** one by one. It will get RFI container ID and prepare user id and one file lineage urn (for attachment test) and seed urn (for pushpin demo).
-   <p align="center"><img src="../help/runfirst.png" width="600" ></p> 
+   <p align="center"><img src="./help/runfirst.png" width="600" ></p> 
 
 3. Play the API scripts. Try to change some parameters or body with more scenarios. 
 
