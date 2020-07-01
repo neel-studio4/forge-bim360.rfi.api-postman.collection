@@ -1,13 +1,380 @@
 {
 	"info": {
-		"_postman_id": "6907e6a4-b0e0-4f1d-82fb-898d84f39dc5",
-		"name": "BIM 360 RFI V2 Endpoints",
+		"_postman_id": "420687c9-6f41-4535-8f3a-e4d10b5a4cfb",
+		"name": "BIM 360 RFI V2 API Endpoints",
+		"description": "This collection follows the API Reference at \r\nhttps://forge.autodesk.com/en/docs/bim360/v1/reference/http/rfis-v2-rfis-GET/\r\nand some tutorials at\r\nhttps://forge.autodesk.com/en/docs/bim360/v1/tutorials/rfis/retrieve-rfis-container-id/\r\n\r\nIt shows the basic usage of each endpoint of API. you can add/modify with testing on more scenarios. \r\nPlease check the description of each endpoint before running the endpoint.\r\n\r\nThe scripts of tutorials are not exact same to the document, while the API logic behind is similar.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "API Reference",
 			"item": [
+				{
+					"name": "Run Firstly",
+					"item": [
+						{
+							"name": "01-GET one hub",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "111cd299-b948-4f5b-8b8f-d28125517dd0",
+										"exec": [
+											"pm.test(\"Get hub collection, Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"var hub_name = pm.environment.get(\"hub_name\") ",
+											"",
+											"pm.test(\"find matches hub by id: \" + hub_name, function () {",
+											"    var body = JSON.parse(responseBody);",
+											"    var find = body.data.find(d=>d.attributes.name == hub_name)",
+											"",
+											"    pm.expect(find).not.eq(undefined); ",
+											"    ",
+											"    if(find){",
+											"        pm.environment.set(\"hub_id_with_b\", find.id);",
+											"        pm.environment.set(\"hub_id_without_b\", find.id.split(\"b.\").join(\"\"));",
+											"    }else{",
+											"        ",
+											"    }",
+											"    ",
+											"});",
+											"",
+											"     "
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "4d86450e-4bfb-4a03-931c-eecfab2df9e6",
+										"exec": [
+											"pm.environment.set(\"hub_name\", \"Autodesk Forge Partner Development\");"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_domain}}/project/v1/hubs",
+									"host": [
+										"{{base_domain}}"
+									],
+									"path": [
+										"project",
+										"v1",
+										"hubs"
+									]
+								},
+								"description": "GET all hubs of your account, and get one hub. Please provide the hub name (hub_name) in environment variables"
+							},
+							"response": []
+						},
+						{
+							"name": "02-GET one project",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "32dc7e27-afa0-45a0-bfab-ddec7b60e0c3",
+										"exec": [
+											"pm.test(\"Get project collection, Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"var project_name = pm.environment.get(\"project_name\") ",
+											"pm.test(\"find matches project by name: \" + project_name, function () {",
+											"    var body = JSON.parse(responseBody);",
+											"    var find = body.data.find(d=>d.attributes.name == project_name)",
+											"",
+											"    pm.expect(find).not.eq(undefined); ",
+											"    ",
+											"    if(find){",
+											"        pm.environment.set(\"project_id_with_b\", find.id);",
+											"        pm.environment.set(\"project_id_without_b\", find.id.split(\"b.\").join(\"\"));",
+											"    }else{",
+											"        ",
+											"    }",
+											"    ",
+											"});",
+											"",
+											"     "
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "bf6e61c9-2d59-4ae6-8682-8d2a9f0c3821",
+										"exec": [
+											"pm.environment.set(\"project_name\", \"Forge Concert Hall\");"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_domain}}/project/v1/hubs/{{hub_id_with_b}}/projects",
+									"host": [
+										"{{base_domain}}"
+									],
+									"path": [
+										"project",
+										"v1",
+										"hubs",
+										"{{hub_id_with_b}}",
+										"projects"
+									]
+								},
+								"description": "GET all projects of one hub, and get one project Please provide the hub name (project_name) in environment variables"
+							},
+							"response": []
+						},
+						{
+							"name": "03-GET RFI container ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "642abbaa-f44b-46e3-be67-bad95f960a8e",
+										"exec": [
+											"pm.test(\"Get project data, Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"",
+											"pm.test(\"find RFI container ID \", function () {",
+											"    var body = JSON.parse(responseBody);",
+											"    var find = body.data.relationships.rfis.data.id  ",
+											"",
+											"    pm.expect(find).not.eq(undefined); ",
+											"    pm.environment.set(\"rfi_container_id\", find); ",
+											"    ",
+											"});",
+											"",
+											"pm.test(\"find Root Folder ID \", function () {",
+											"    var body = JSON.parse(responseBody);",
+											"    var find = body.data.relationships.rootFolder.data.id  ",
+											"",
+											"    pm.expect(find).not.eq(undefined); ",
+											"    pm.environment.set(\"root_folder_id\", find); ",
+											"    ",
+											"});",
+											" "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_domain}}/project/v1/hubs/{{hub_id_with_b}}/projects/{{project_id_with_b}}",
+									"host": [
+										"{{base_domain}}"
+									],
+									"path": [
+										"project",
+										"v1",
+										"hubs",
+										"{{hub_id_with_b}}",
+										"projects",
+										"{{project_id_with_b}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "04-Get project user name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "fe8fa7ff-f9c0-4ca1-ac01-e4d0887cb2d5",
+										"exec": [
+											"pm.test(\"Get project users, Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"var one_user_email = pm.environment.get(\"one_creator_email\");",
+											"",
+											"pm.test(\"find one user id by email: \" + one_user_email, function () {",
+											"    var body = JSON.parse(responseBody);",
+											"    var find = body.results.find(d=>d.email==one_user_email)  ",
+											"",
+											"    pm.expect(find).not.eq(undefined); ",
+											"    pm.environment.set(\"one_user_autodeskId\", find.autodeskId); ",
+											"    pm.environment.set(\"one_user_name\", find.name); ",
+											"",
+											"    ",
+											"});",
+											"",
+											"  "
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "cc2bf98a-d00e-440d-81d4-4606dc365d40",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_domain}}/bim360/admin/v1/projects/{{project_id_with_b}}/users",
+									"host": [
+										"{{base_domain}}"
+									],
+									"path": [
+										"bim360",
+										"admin",
+										"v1",
+										"projects",
+										"{{project_id_with_b}}",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "05-GET project file folder id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "5dac0b32-acec-4138-8acd-075a4a68bac8",
+										"exec": [
+											"pm.test(\"Get project top folders, Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"",
+											"pm.test(\"find Project Files folder ID \", function () {",
+											"    var body = JSON.parse(responseBody);",
+											"    var find = body.data.find(d=>d.attributes.displayName == \"Project Files\")",
+											"",
+											"    pm.expect(find).not.eq(undefined); ",
+											"    pm.environment.set(\"projectfiles_folder_id\", find.id); ",
+											"    ",
+											"});",
+											" "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_domain}}/project/v1/hubs/{{hub_id_with_b}}/projects/{{project_id_with_b}}/topFolders",
+									"host": [
+										"{{base_domain}}"
+									],
+									"path": [
+										"project",
+										"v1",
+										"hubs",
+										"{{hub_id_with_b}}",
+										"projects",
+										"{{project_id_with_b}}",
+										"topFolders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "06-GET one file lineage and seed URN-Assume at least one file is available",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "60da83d6-a4e1-4507-a19a-7c3eeb413015",
+										"exec": [
+											"pm.test(\"Get one folder contents, Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"var lineageUrn = null",
+											"",
+											"pm.test(\"find one file lineage URN \", function () {",
+											"    var body = JSON.parse(responseBody);",
+											"    var find = body.data[0]",
+											"",
+											"    pm.expect(find).not.eq(undefined); ",
+											"    pm.environment.set(\"rfi_existing_file_urn\", find.id);",
+											"    pm.environment.set(\"rfi_existing_file_displayname\", find.attributes.displayName);  ",
+											"    lineageUrn = find.id;",
+											" ",
+											"});",
+											"",
+											"pm.test(\"find one file Seed URN \", function () {",
+											"    var body = JSON.parse(responseBody);",
+											"    var find = body.included.find(i=>i.relationships.item.data.id==lineageUrn)",
+											"",
+											"    pm.expect(find).not.eq(undefined); ",
+											"    pm.environment.set(\"rfi_existing_file_seed_urn\", find.relationships.derivatives.data.id);  ",
+											"});",
+											" "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_domain}}/data/v1/projects/{{project_id_with_b}}/folders/{{projectfiles_folder_id}}/contents?filter[type]=items",
+									"host": [
+										"{{base_domain}}"
+									],
+									"path": [
+										"data",
+										"v1",
+										"projects",
+										"{{project_id_with_b}}",
+										"folders",
+										"{{projectfiles_folder_id}}",
+										"contents"
+									],
+									"query": [
+										{
+											"key": "filter[type]",
+											"value": "items"
+										}
+									]
+								},
+								"description": "Assume at least one file is available. The script will pick the firs file urn"
+							},
+							"response": []
+						}
+					],
+					"description": "This is to get RFI container ID and prepare user id and one file urn",
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
 				{
 					"name": "GET rfis/users/me",
 					"request": {
@@ -37,7 +404,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7e36e7c0-be03-4769-83f5-7966fa73bc11",
+								"id": "50937258-fe14-4a5d-b00d-3fe0f6dbe34c",
 								"exec": [
 									"var body = JSON.parse(responseBody);",
 									"pm.environment.set(\"one_rfi_id\", body[\"results\"][0].id)"
@@ -50,7 +417,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis?limit=200",
+							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis?limit=50",
 							"host": [
 								"{{base_domain}}"
 							],
@@ -65,7 +432,7 @@
 							"query": [
 								{
 									"key": "limit",
-									"value": "200"
+									"value": "50"
 								}
 							]
 						}
@@ -101,10 +468,30 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e3fe22a0-b7f0-490c-8322-736cdc552f1e",
+								"id": "11a3b229-d49b-4eac-9fad-0457e1043e9e",
 								"exec": [
 									"var body = JSON.parse(responseBody);",
 									"pm.environment.set(\"one_rfi_id\", body[\"id\"])"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ec0b5bbd-2521-44d0-8426-09ab7df5c16d",
+								"exec": [
+									"var currentDate = new Date()\r",
+									"var titleDateStr = currentDate.getFullYear() \r",
+									"                +\"-\" + ((\"0\" + (currentDate.getMonth()+1)).slice(-2) )\r",
+									"                + \"-\" +  (\"0\" + currentDate.getDate()).slice(-2) \r",
+									"                + \"T\" +(\"0\" + currentDate.getHours()).slice(-2) \r",
+									"                + \":\" + (\"0\" + currentDate.getMinutes()).slice(-2) \r",
+									"                + \":\" + (\"0\" + currentDate.getSeconds()).slice(-2) \r",
+									"                + \".000Z\"\r",
+									"var dueDateStr = titleDateStr\r",
+									"pm.environment.set(\"rfi_title_date\", titleDateStr);\r",
+									"pm.environment.set(\"due_date\", dueDateStr);"
 								],
 								"type": "text/javascript"
 							}
@@ -121,7 +508,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"status\": \"submitted\",\n        \"customIdentifier\": \"149\",\n        \"title\": \"create RFI by API - 2020-5-6\",\n        \"question\": \"create RFI by API - 2020-5-6\",\n        \"dueDate\": \"2020-06-12T13:06:39.216Z\",\n        \"assignedTo\": \"{{one_user_autodeskId}}\"\n }"
+							"raw": "{\n         \"status\": \"draft\",\n        \"title\": \"create RFI as Draft by API, assign to {{one_user_name}} on {{rfi_title_date}}\",\n        \"question\": \"Will we survive with API?\",\n        \"dueDate\": \"{{due_date}}\",\n        \"assignedTo\": \"{{one_user_autodeskId}}\"\n }"
 						},
 						"url": {
 							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis",
@@ -146,7 +533,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "111ef35f-0e0e-4646-9ee1-1a4958aabc72",
+								"id": "a2a18d0b-469e-4854-81ce-7239c8f59e73",
 								"exec": [
 									"var body = JSON.parse(responseBody);",
 									"pm.environment.set(\"one_rfi_id\", body[\"id\"])"
@@ -166,52 +553,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n            \"title\": \"create rfi by API with pushpin 2020-5-6\",\n            \"question\": \"\",\n            \"status\": \"submitted\",\n            \"assignedTo\": \"BVE5MB3YCEMF\",\n             \"linkedDocument\": \"urn:adsk.wipprod:dm.lineage:9oLxo4X1TcygidVwpkhZig\",\n    \t\t\"linkedDocumentVersion\": 3,\n             \"pushpinAttributes\": {\n\t\t\t        \"createdAt\": \"2020-05-06T11:09:25.749Z\",\n\t\t\t        \"createdBy\": \"200902260532621\",\n\t\t\t        \"createdDocVersion\": 3,\n\t\t\t        \"externalId\": \"9e597f98-694d-4ada-b8ef-0e7459e0b930-00024dc4\",\n\t\t\t        \"location\": {\n\t\t\t            \"x\": -120.88224361161537,\n\t\t\t            \"y\": -189.23918151855474,\n\t\t\t            \"z\": 8.49880441847614\n\t\t\t        },\n\t\t\t        \"objectId\": \"2659\",\n\t\t\t        \"type\": \"TwoDVectorPushpin\",\n\t\t\t        \"viewerState\": {\n\t\t\t            \"seedURN\": \"dXJuOmFkc2sud2lwcHJvZDpmcy5maWxlOnZmLjlvTHhvNFgxVGN5Z2lkVndwa2haaWc_dmVyc2lvbj0z\",\n\t\t\t            \"viewport\": {\n\t\t\t                \"up\": [\n\t\t\t                    -0.30864454825374693,\n\t\t\t                    0.29197481273166564,\n\t\t\t                    0.9052564562396388\n\t\t\t                ],\n\t\t\t                \"eye\": [\n\t\t\t                    \"199.59531283648658\",\n\t\t\t                    \"-159.04935941152326\",\n\t\t\t                    \"156.38680334350138\"\n\t\t\t                ],\n\t\t\t                \"name\": \"\",\n\t\t\t                \"target\": [\n\t\t\t                    \"65.44223022842972\",\n\t\t\t                    \"-32.141816759382564\",\n\t\t\t                    \"69.71586823145593\"\n\t\t\t                ],\n\t\t\t                \"pivotPoint\": [\n\t\t\t                    \"18.258285522460938\",\n\t\t\t                    \"-76.55072784423828\",\n\t\t\t                    \"18.70078625212983\"\n\t\t\t                ],\n\t\t\t                \"projection\": \"orthographic\",\n\t\t\t                \"aspectRatio\": 1.468390839675377,\n\t\t\t                \"worldUpVector\": [\n\t\t\t                    0,\n\t\t\t                    0,\n\t\t\t                    1\n\t\t\t                ],\n\t\t\t                \"isOrthographic\": true,\n\t\t\t                \"distanceToOrbit\": 229.07294112219935,\n\t\t\t                \"orthographicHeight\": 203.99613954299585\n\t\t\t            },\n\t\t\t            \"cutplanes\": [],\n\t\t\t            \"objectSet\": [\n\t\t\t                {\n\t\t\t                    \"id\": [\n\t\t\t                        2659\n\t\t\t                    ],\n\t\t\t                    \"hidden\": [],\n\t\t\t                    \"idType\": \"lmv\",\n\t\t\t                    \"isolated\": [],\n\t\t\t                    \"explodeScale\": 0\n\t\t\t                }\n\t\t\t            ],\n\t\t\t            \"globalOffset\": {\n\t\t\t                \"x\": 141.90737915039062,\n\t\t\t                \"y\": 12.19140625,\n\t\t\t                \"z\": 16.274480481255807\n\t\t\t            },\n\t\t\t            \"renderOptions\": {\n\t\t\t                \"toneMap\": {\n\t\t\t                    \"method\": 1,\n\t\t\t                    \"exposure\": -7,\n\t\t\t                    \"lightMultiplier\": -1e-20\n\t\t\t                },\n\t\t\t                \"appearance\": {\n\t\t\t                    \"ghostHidden\": true,\n\t\t\t                    \"antiAliasing\": true,\n\t\t\t                    \"displayLines\": true,\n\t\t\t                    \"ambientShadow\": false,\n\t\t\t                    \"displayPoints\": true,\n\t\t\t                    \"swapBlackAndWhite\": false,\n\t\t\t                    \"progressiveDisplay\": true\n\t\t\t                },\n\t\t\t                \"environment\": \"Boardwalk\",\n\t\t\t                \"ambientOcclusion\": {\n\t\t\t                    \"radius\": 13.123359580052492,\n\t\t\t                    \"enabled\": false,\n\t\t\t                    \"intensity\": 1\n\t\t\t                }\n\t\t\t            }\n\t\t\t         }\n    }\n  }"
-						},
-						"url": {
-							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis",
-							"host": [
-								"{{base_domain}}"
-							],
-							"path": [
-								"bim360",
-								"rfis",
-								"v2",
-								"containers",
-								"{{rfi_container_id}}",
-								"rfis"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "POST rfis with comments",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "52ef49e3-e122-49f3-b6f8-c7a909b8f8d7",
-								"exec": [
-									"var body = JSON.parse(responseBody);",
-									"pm.environment.set(\"one_rfi_id\", body[\"id\"])"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n        \"status\": \"open\",\n        \"customIdentifier\": \"142\",\n        \"title\": \"create RFI by API with comments - 2020-5-6\",\n        \"question\": \"create RFI by API with comments - 2020-5-6\",\n        \"dueDate\": \"2020-06-12T13:06:39.216Z\",\n        \"assignedTo\": \"{{one_user_autodeskId}}\",\n        \"commentsAttributes\": [\n          {\n            \"body\": \"post comments by API when  creating RFI\"\n          }\n        ]\n }"
+							"raw": "{\n            \"title\": \"create RFI as Draft by API, assign to {{one_user_name}} on {{rfi_title_date}}\",\n            \"question\": \"\",\n            \"status\": \"submitted\",\n             \"assignedTo\": \"{{one_user_autodeskId}}\",\n             \"linkedDocument\": \"{{rfi_existing_file_urn}}\",\n             \"pushpinAttributes\": {\n\t\t\t        \"location\": {\n\t\t\t            \"x\": -120.88224361161537,\n\t\t\t            \"y\": -189.23918151855474,\n\t\t\t            \"z\": 8.49880441847614\n\t\t\t        },\n\t\t\t        \"objectId\": \"1\",\n\t\t\t        \"type\": \"TwoDVectorPushpin\",\n\t\t\t        \"viewerState\": {\n\t\t\t            \"seedURN\": \"{{rfi_existing_file_seed_urn}}\",\n\t\t\t            \"viewport\": {\n\t\t\t                \"up\": [\n\t\t\t                    -0.30864454825374693,\n\t\t\t                    0.29197481273166564,\n\t\t\t                    0.9052564562396388\n\t\t\t                ],\n\t\t\t                \"eye\": [\n\t\t\t                    \"199.59531283648658\",\n\t\t\t                    \"-159.04935941152326\",\n\t\t\t                    \"156.38680334350138\"\n\t\t\t                ],\n\t\t\t                \"name\": \"\",\n\t\t\t                \"target\": [\n\t\t\t                    \"65.44223022842972\",\n\t\t\t                    \"-32.141816759382564\",\n\t\t\t                    \"69.71586823145593\"\n\t\t\t                ],\n\t\t\t                \"pivotPoint\": [\n\t\t\t                    \"18.258285522460938\",\n\t\t\t                    \"-76.55072784423828\",\n\t\t\t                    \"18.70078625212983\"\n\t\t\t                ],\n\t\t\t                \"projection\": \"orthographic\",\n\t\t\t                \"aspectRatio\": 1.468390839675377,\n\t\t\t                \"worldUpVector\": [\n\t\t\t                    0,\n\t\t\t                    0,\n\t\t\t                    1\n\t\t\t                ],\n\t\t\t                \"isOrthographic\": true,\n\t\t\t                \"distanceToOrbit\": 229.07294112219935,\n\t\t\t                \"orthographicHeight\": 203.99613954299585\n\t\t\t            },\n\t\t\t            \"cutplanes\": [],\n\t\t\t            \"objectSet\": [\n\t\t\t                {\n\t\t\t                    \"id\": [\n\t\t\t                        2659\n\t\t\t                    ],\n\t\t\t                    \"hidden\": [],\n\t\t\t                    \"idType\": \"lmv\",\n\t\t\t                    \"isolated\": [],\n\t\t\t                    \"explodeScale\": 0\n\t\t\t                }\n\t\t\t            ],\n\t\t\t            \"globalOffset\": {\n\t\t\t                \"x\": 141.90737915039062,\n\t\t\t                \"y\": 12.19140625,\n\t\t\t                \"z\": 16.274480481255807\n\t\t\t            },\n\t\t\t            \"renderOptions\": {\n\t\t\t                \"toneMap\": {\n\t\t\t                    \"method\": 1,\n\t\t\t                    \"exposure\": -7,\n\t\t\t                    \"lightMultiplier\": -1e-20\n\t\t\t                },\n\t\t\t                \"appearance\": {\n\t\t\t                    \"ghostHidden\": true,\n\t\t\t                    \"antiAliasing\": true,\n\t\t\t                    \"displayLines\": true,\n\t\t\t                    \"ambientShadow\": false,\n\t\t\t                    \"displayPoints\": true,\n\t\t\t                    \"swapBlackAndWhite\": false,\n\t\t\t                    \"progressiveDisplay\": true\n\t\t\t                },\n\t\t\t                \"environment\": \"Boardwalk\",\n\t\t\t                \"ambientOcclusion\": {\n\t\t\t                    \"radius\": 13.123359580052492,\n\t\t\t                    \"enabled\": false,\n\t\t\t                    \"intensity\": 1\n\t\t\t                }\n\t\t\t            }\n\t\t\t         }\n    }\n  }"
 						},
 						"url": {
 							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis",
@@ -232,18 +574,6 @@
 				},
 				{
 					"name": "PATCH rfis/:id",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "a72b5ffd-75e7-439b-b6d5-f4beceaa4322",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -255,7 +585,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"status\": \"void\",\n        \"title\": \"patch RFI by API with changed params - 2020-5-6\"\n        \n }"
+							"raw": "{\n        \"status\": \"void\",\n        \"title\": \"patch RFI by API with changed params\" \n }"
 						},
 						"url": {
 							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis/{{one_rfi_id}}",
@@ -281,12 +611,12 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7cef56e8-eba7-4326-976c-d652cfbe8a80",
+								"type": "text/javascript",
 								"exec": [
 									"var body = JSON.parse(responseBody);",
 									"pm.environment.set(\"one_comment_id\", body[\"results\"][0].id)"
 								],
-								"type": "text/javascript"
+								"id": "a6121ec9-0bcb-4413-85ed-eda2fff67e96"
 							}
 						}
 					],
@@ -318,12 +648,12 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f1fdef48-c6d0-4db3-97e1-33d9f8899520",
+								"type": "text/javascript",
 								"exec": [
 									"var body = JSON.parse(responseBody);",
 									"pm.environment.set(\"one_comment_id\", body[\"id\"])"
 								],
-								"type": "text/javascript"
+								"id": "7b844169-6d17-42bf-afc9-13aabeb85a1e"
 							}
 						}
 					],
@@ -360,17 +690,64 @@
 					"response": []
 				},
 				{
+					"name": "POST attachments",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bf2f88ef-0697-4159-ad3e-496973c6e5e3",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"pm.environment.set(\"one_attachment_id\", body[\"id\"].id)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"name\": \"{{rfi_existing_file_displayname}}\",\n        \"urn\": \"{{rfi_existing_file_urn}}\",\n        \"urnType\": \"dm\"\n }"
+						},
+						"url": {
+							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis/{{one_rfi_id}}/attachments",
+							"host": [
+								"{{base_domain}}"
+							],
+							"path": [
+								"bim360",
+								"rfis",
+								"v2",
+								"containers",
+								"{{rfi_container_id}}",
+								"rfis",
+								"{{one_rfi_id}}",
+								"attachments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "GET RFIs/:id/attachments",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "0949ade4-4c12-429c-98e9-fd4b36b85a92",
+								"type": "text/javascript",
 								"exec": [
 									"var body = JSON.parse(responseBody);",
 									"pm.environment.set(\"one_attachment_id\", body[\"results\"][0].id)"
 								],
-								"type": "text/javascript"
+								"id": "a02d87bf-e788-4402-b64c-fd41c434ddf9"
 							}
 						}
 					],
@@ -397,57 +774,14 @@
 					"response": []
 				},
 				{
-					"name": "POST attachments",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "7597ec89-2d79-4c08-ad57-70d08d314f41",
-								"exec": [
-									"var body = JSON.parse(responseBody);",
-									"pm.environment.set(\"one_attachment_id\", body[\"id\"].id)"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n        \"name\": \"Photo.png\",\n        \"urn\": \"urn:adsk.wipprod:dm.lineage:1t7QY9-JSxCB0TLh1qMvF\",\n        \"urnType\": \"dm\"\n }"
-						},
-						"url": {
-							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis/{{one_rfi_id}}/attachments",
-							"host": [
-								"{{base_domain}}"
-							],
-							"path": [
-								"bim360",
-								"rfis",
-								"v2",
-								"containers",
-								"{{rfi_container_id}}",
-								"rfis",
-								"{{one_rfi_id}}",
-								"attachments"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "DELETE attachments/:attachmentId",
 					"request": {
 						"method": "DELETE",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis/{{one_rfi_id}}/attachments/{{one_attachment_id}}",
 							"host": [
@@ -472,23 +806,23 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "Workflow US: Sumittted->Open->Answered>>Closed",
+			"name": "Workflow : Draft>>Sumittted->Open->Answered>>Closed",
 			"item": [
 				{
-					"name": "GET one hub",
+					"name": "01-GET one hub",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "f811e088-8987-451e-bf92-c32d6fc04e2d",
+								"id": "3ecb21bf-c463-4612-8ab0-456a2278e4a6",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get hub collection, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
 									"var hub_name = pm.environment.get(\"hub_name\") ",
 									"",
-									"pm.test(\"find matches hub: \" + hub_name, function () {",
+									"pm.test(\"find matches hub by id: \" + hub_name, function () {",
 									"    var body = JSON.parse(responseBody);",
 									"    var find = body.data.find(d=>d.attributes.name == hub_name)",
 									"",
@@ -511,7 +845,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "11869928-e78a-4f5a-8aa4-53e036d342ca",
+								"id": "1ec49854-f0ed-48fb-b370-97c0e9bc84b2",
 								"exec": [
 									"pm.environment.set(\"hub_name\", \"Autodesk Forge Partner Development\");"
 								],
@@ -538,19 +872,19 @@
 					"response": []
 				},
 				{
-					"name": "GET one project",
+					"name": "02-GET one project",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "c94fa534-b761-44c1-9c4d-7c105ad88d50",
+								"id": "acdc57ef-1e55-4777-8d3c-f7e4fd28070e",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get project collection, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
 									"var project_name = pm.environment.get(\"project_name\") ",
-									"pm.test(\"find matches project: \" + project_name, function () {",
+									"pm.test(\"find matches project by name: \" + project_name, function () {",
 									"    var body = JSON.parse(responseBody);",
 									"    var find = body.data.find(d=>d.attributes.name == project_name)",
 									"",
@@ -573,7 +907,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "d7b40761-c9e8-4c0b-833c-0c5641ecb266",
+								"id": "6f542b43-ad5a-4d81-abd3-2a455264162c",
 								"exec": [
 									"pm.environment.set(\"project_name\", \"Forge Concert Hall\");"
 								],
@@ -602,14 +936,14 @@
 					"response": []
 				},
 				{
-					"name": "GET RFI container ID",
+					"name": "03-GET RFI container ID",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "50887f11-321b-48d4-9b75-ebe54082ea52",
+								"id": "12f5264e-53a1-4023-be96-36e32ec166dd",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get project data, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
@@ -658,18 +992,18 @@
 					"response": []
 				},
 				{
-					"name": "Get project user",
+					"name": "04-Get project user name",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "a8a065f5-96bd-41e3-b8bc-1ddfa575038d",
+								"id": "f22f3596-4b14-45d7-8ce4-d5783023a78c",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get project users, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"var one_user_email = pm.environment.get(\"one_user_email\");",
+									"var one_user_email = pm.environment.get(\"one_creator_email\");",
 									"",
 									"pm.test(\"find one user id by email: \" + one_user_email, function () {",
 									"    var body = JSON.parse(responseBody);",
@@ -690,9 +1024,9 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "807f5255-dc4d-424f-89b0-b0407e255724",
+								"id": "34c96510-46ad-4a55-84ed-20b0cb4fbd09",
 								"exec": [
-									"pm.environment.set(\"one_user_email\", \"devtechchina@hotmail.com\");"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -700,23 +1034,7 @@
 					],
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"disabled": true
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							},
-							{
-								"key": "User-Id",
-								"type": "text",
-								"value": "200902260532621",
-								"disabled": true
-							}
-						],
+						"header": [],
 						"url": {
 							"raw": "{{base_domain}}/bim360/admin/v1/projects/{{project_id_with_b}}/users",
 							"host": [
@@ -735,14 +1053,14 @@
 					"response": []
 				},
 				{
-					"name": "POST one RFI",
+					"name": "05-POST one RFI as Draft",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "93e3856e-6455-43a4-9636-75bf41870a12",
+								"id": "383e10ac-b608-4aa5-a5a2-35c6836065ec",
 								"exec": [
-									"pm.test(\"Status code is 201\", function () {",
+									"pm.test(\"Create RFI, Status code is 201\", function () {",
 									"    pm.response.to.have.status(201);",
 									"});",
 									"",
@@ -770,7 +1088,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "ea7f8186-73fe-4987-8236-1881c93170ae",
+								"id": "92be64d9-833f-4db4-82fc-a2c9787203c4",
 								"exec": [
 									"var currentDate = new Date()",
 									"var titleDateStr = currentDate.getFullYear() ",
@@ -799,7 +1117,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"status\": \"submitted\",\n        \"title\": \"create RFI by API, assign to {{one_user_name}} on {{rfi_title_date}}\",\n        \"question\": \"Will we survive with API?\",\n        \"dueDate\": \"{{due_date}}\",\n        \"assignedTo\": \"{{one_user_autodeskId}}\"\n }"
+							"raw": "{\n        \"status\": \"draft\",\n        \"title\": \"create RFI as Draft by API, assign to {{one_user_name}} on {{rfi_title_date}}\",\n        \"question\": \"Will we survive with API?\",\n        \"dueDate\": \"{{due_date}}\",\n        \"assignedTo\": \"{{one_user_autodeskId}}\"\n }"
 						},
 						"url": {
 							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis",
@@ -814,32 +1132,33 @@
 								"{{rfi_container_id}}",
 								"rfis"
 							]
-						}
+						},
+						"description": "A Draft RFI can be transferred to Manager as Submitted status, or transferred to Reviewer as Open status."
 					},
 					"response": []
 				},
 				{
-					"name": "GET permitted actions of one RFI",
+					"name": "06-GET permitted status [Submitted] of one RFI",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "ee74b87c-bcab-4dab-8b24-545505cdae4f",
+								"id": "ac7d88fe-27df-4ff1-9000-1d725cbc9570",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"GET RFI data, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									" ",
-									"pm.test(\"get OPEN permitted action\", function () {",
+									"pm.test(\"get [Submitted] permitted action\", function () {",
 									"     ",
 									"    var body = JSON.parse(responseBody);",
 									"    ",
 									"    var permittedStatuses = body.permittedActions.updateRfi.permittedStatuses",
-									"    var open_status = permittedStatuses.find(d=>d.status == \"open\")",
+									"    var open_status = permittedStatuses.find(d=>d.status == \"submitted\")",
 									"    if(open_status){",
 									"        var one_reviewer_adskId = open_status.requiredAttributes[0].values[0].value",
 									"        pm.expect( one_reviewer_adskId).not.eq(undefined);  ",
-									"        pm.environment.set(\"one_reviewer_adskId\", one_reviewer_adskId); ",
+									"        pm.environment.set(\"one_manager_adskId\", one_reviewer_adskId); ",
 									"    }else{",
 									"       pm.expect( open_status).not.eq(undefined);   ",
 									"    } ",
@@ -877,23 +1196,23 @@
 					"response": []
 				},
 				{
-					"name": "PATCH one RFI to open",
+					"name": "07-PATCH one RFI to Manager with [Submitted] status",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "d0148702-73c6-4fab-a59b-5486e2cacc43",
+								"id": "594d81d3-cb7d-46a3-ae5a-72f6ce4c87d7",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"PATCH one RFI to Manager with [Submitted] status, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									" ",
-									"pm.test(\"get ANSWER permitted action\", function () {",
+									"pm.test(\"get [Open] permitted action and Reviewer\", function () {",
 									"     ",
 									"    var body = JSON.parse(responseBody);",
 									"    ",
 									"    var permittedStatuses = body.permittedActions.updateRfi.permittedStatuses",
-									"    var answered_status = permittedStatuses.find(d=>d.status == \"answered\")",
+									"    var answered_status = permittedStatuses.find(d=>d.status == \"open\")",
 									"    if(answered_status){",
 									"        var one_reviewer_adskId = answered_status.requiredAttributes[0].values[0].value",
 									"        pm.expect( one_reviewer_adskId).not.eq(undefined);  ",
@@ -924,7 +1243,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"status\": \"open\"\n }"
+							"raw": "{\n        \"status\": \"submitted\",\n        \"assignedTo\": \"{{one_manager_adskId}}\"\n }"
 						},
 						"url": {
 							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis/{{one_rfi_id}}",
@@ -945,12 +1264,79 @@
 					"response": []
 				},
 				{
-					"name": "PATCH RFI to answered",
+					"name": "08-PATCH Reviewer with [Open] status",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "f9704885-ae7f-49f9-8d63-e269b5ecc53a",
+								"id": "74dbd7f6-4fa5-40b5-afc7-cfd84646fc31",
+								"exec": [
+									"pm.test(\"PATCH RFI to answered, Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "fd5fb9f2-fd75-457a-8518-b45f9ad5e754",
+								"exec": [
+									"var currentDate = new Date()",
+									"var answerDateStr = currentDate.getFullYear() ",
+									"                +\"-\" + ((\"0\" + (currentDate.getMonth()+1)).slice(-2) )",
+									"                + \"-\" +  (\"0\" + currentDate.getDate()).slice(-2) ",
+									"                + \"T\" +(\"0\" + currentDate.getHours()).slice(-2) ",
+									"                + \":\" + (\"0\" + currentDate.getMinutes()).slice(-2) ",
+									"                + \":\" + (\"0\" + currentDate.getSeconds()).slice(-2) ",
+									"                + \".000Z\"",
+									"pm.environment.set(\"rfi_answer_date\", answerDateStr);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"status\": \"open\" ,\n        \"assignedTo\": \"{{one_reviewer_adskId}}\"\n\n  }"
+						},
+						"url": {
+							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis/{{one_rfi_id}}",
+							"host": [
+								"{{base_domain}}"
+							],
+							"path": [
+								"bim360",
+								"rfis",
+								"v2",
+								"containers",
+								"{{rfi_container_id}}",
+								"rfis",
+								"{{one_rfi_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "09-PATCH RFI to answer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9ee8676e-c099-4863-9e6b-5cc4621033bb",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -963,7 +1349,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "c66214bc-dd3c-4622-8019-1787ab2bb601",
+								"id": "e3489022-6f35-43bd-b096-08f3dc7f4195",
 								"exec": [
 									"var currentDate = new Date()",
 									"var answerDateStr = currentDate.getFullYear() ",
@@ -1012,26 +1398,16 @@
 					"response": []
 				},
 				{
-					"name": "PATCH RFI to close",
+					"name": "10-PATCH RFI to close",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "62406bbc-0d32-4ca5-8593-68fc470576f9",
+								"id": "55308149-3206-43f9-9aa3-f4548312ae1a",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"PATCH RFI to close, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "237b70e5-2695-4448-9539-93bcac7dd071",
-								"exec": [
 									""
 								],
 								"type": "text/javascript"
@@ -1070,20 +1446,42 @@
 					"response": []
 				}
 			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f7c602fb-2354-490f-995f-9f9f28909b08",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "a6d3d374-211d-44e7-8840-b3cd6a806b82",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "Workflow US: Create RFI with comment, add comment and get comments",
+			"name": "Create RFI, add comment and get comments",
 			"item": [
 				{
-					"name": "GET one hub",
+					"name": "01-GET one hub",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "75e254a2-6ab7-41f4-8665-f16e7b7b723b",
+								"id": "a9f3c147-3caf-45d6-af7d-cd83ccb86925",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get hub collection, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
@@ -1112,7 +1510,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "97d0bfd0-3af1-4c16-9494-24a2766f81a5",
+								"id": "17a77c1b-4e16-4b65-8f27-f1bfd219da60",
 								"exec": [
 									"pm.environment.set(\"hub_name\", \"Autodesk Forge Partner Development\");"
 								],
@@ -1139,14 +1537,14 @@
 					"response": []
 				},
 				{
-					"name": "GET one project",
+					"name": "02-GET one project",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "68deb690-67a8-42b4-a9a8-a9fe991684da",
+								"id": "1735fb50-1965-447e-9bde-cce60d0d31fd",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get project collection, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
@@ -1174,7 +1572,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "65ec1804-019e-4895-b1db-0a017ae933ae",
+								"id": "a453af9c-8e89-4746-b291-68d955882372",
 								"exec": [
 									"pm.environment.set(\"project_name\", \"Forge Concert Hall\");"
 								],
@@ -1203,14 +1601,14 @@
 					"response": []
 				},
 				{
-					"name": "GET RFI container ID",
+					"name": "03-GET RFI container ID",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "39f1a1a4-c10d-42cd-8b2b-c693e1a1745d",
+								"id": "ff05ff47-3873-42b7-8c8c-1f9a0a92dd0d",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get project data, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
@@ -1259,18 +1657,18 @@
 					"response": []
 				},
 				{
-					"name": "Get project user",
+					"name": "04-Get project user name",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "b1129ddc-9dc4-4d5d-be04-e050747f00c9",
+								"id": "0e729be2-2f8a-42e8-9075-beffeb7edd6d",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get project users, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"var one_user_email = pm.environment.get(\"one_user_email\");",
+									"var one_user_email = pm.environment.get(\"one_creator_email\");",
 									"",
 									"pm.test(\"find one user id by email: \" + one_user_email, function () {",
 									"    var body = JSON.parse(responseBody);",
@@ -1291,9 +1689,9 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "71acc4d0-2191-4f82-b0dc-cd81678e2958",
+								"id": "f1de534c-983e-4b57-9300-c96e1198071e",
 								"exec": [
-									"pm.environment.set(\"one_user_email\", \"devtechchina@hotmail.com\");"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1336,18 +1734,29 @@
 					"response": []
 				},
 				{
-					"name": "POST one RFI with comment",
+					"name": "05-POST one RFI as Draft",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "eb127c3d-35b7-4b2d-bcca-2385a1fecc34",
+								"id": "8fd488b4-f9b3-41fd-a4b4-1b635db3344e",
 								"exec": [
-									"pm.test(\"Status code is 201\", function () {",
+									"pm.test(\"Create RFI, Status code is 201\", function () {",
 									"    pm.response.to.have.status(201);",
 									"});",
-									" ",
 									"",
+									"var one_user_name = pm.environment.get(\"one_user_name\");",
+									"var rfi_title_date = pm.environment.get(\"rfi_title_date\"); ",
+									"",
+									" ",
+									"pm.test(\"get created RFI id. Title:\" + ",
+									"\"create RFI by API, assign to \" + one_user_name + \" on \" + rfi_title_date, function () {",
+									"     ",
+									"    var body = JSON.parse(responseBody);",
+									"    pm.expect( body.id).not.eq(undefined);  ",
+									"    pm.environment.set(\"one_rfi_id\", body.id);",
+									"    ",
+									"});",
 									""
 								],
 								"type": "text/javascript"
@@ -1356,7 +1765,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "cad2c5d5-283d-4509-bdd4-603d19733c56",
+								"id": "b07db343-a9c2-4014-babb-d03f5db4f31b",
 								"exec": [
 									"var currentDate = new Date()",
 									"var commentDateStr = currentDate.getFullYear() ",
@@ -1384,7 +1793,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"status\": \"submitted\",\n        \"title\": \"create RFI by API, assign to {{one_user_name}} on {{rfi_title_date}} with comments\",\n        \"question\": \"Will we survive with API?\",\n        \"dueDate\": \"{{due_date}}\",\n        \"assignedTo\": \"{{one_user_autodeskId}}\",\n        \"commentsAttributes\": [\n          {\n            \"body\": \"post comments by API when creating RFI {{rfi_comment_date}}\"\n          }\n        ]\n }"
+							"raw": "{\n        \"status\": \"draft\",\n        \"title\": \"create RFI by API, assign to {{one_user_name}} on {{rfi_title_date}} with comments\",\n        \"question\": \"Will we survive with API?\",\n        \"dueDate\": \"{{due_date}}\",\n        \"assignedTo\": \"{{one_user_autodeskId}}\" \n        \n }"
 						},
 						"url": {
 							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis",
@@ -1404,14 +1813,14 @@
 					"response": []
 				},
 				{
-					"name": "POST comments",
+					"name": "06-POST comments",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "e1e20986-c006-44cc-8a54-75e454d4f097",
+								"id": "1d820d65-3063-401b-8c1e-a1578b20cf4b",
 								"exec": [
-									"pm.test(\"Status code is 201\", function () {",
+									"pm.test(\"Post Comment with RFI, Status code is 201\", function () {",
 									"    pm.response.to.have.status(201);",
 									"});",
 									" "
@@ -1422,7 +1831,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "e6a60ceb-304e-456f-9210-3ebff2051a4d",
+								"id": "bcc9c5c2-2252-4484-a329-346773ed7bf4",
 								"exec": [
 									"var currentDate = new Date()",
 									"var commentDateStr = currentDate.getFullYear() ",
@@ -1472,14 +1881,14 @@
 					"response": []
 				},
 				{
-					"name": "GET comments",
+					"name": "07-GET comments",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "c36b881f-8889-4b49-92e4-5b1a69d8903d",
+								"id": "50ec0fc6-a3a5-4642-86bb-cf7f4ccd0e66",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"GET RFI Comments\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									" ",
@@ -1516,17 +1925,17 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "Workflow US: Create RFI with comment, add, get and delete comments",
+			"name": "Create RFI, add exiting document as attachment, and delete attachment",
 			"item": [
 				{
-					"name": "GET one hub",
+					"name": "01-GET one hub",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "0a5e1847-2c44-435b-9f2c-87e22e62b71e",
+								"id": "0bf4497d-69e9-40ad-9900-ee09988939ee",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get hub collection, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
@@ -1555,7 +1964,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "b8027832-3dbd-4e3c-abbd-08ee0bc80518",
+								"id": "b7621a34-eef5-46f6-bc11-eba6870701e7",
 								"exec": [
 									"pm.environment.set(\"hub_name\", \"Autodesk Forge Partner Development\");"
 								],
@@ -1582,17 +1991,16 @@
 					"response": []
 				},
 				{
-					"name": "GET one project",
+					"name": "02-GET one project",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "cd4b9b2f-9e03-4a30-b257-25bf54517536",
+								"id": "a935e274-4b11-4124-a3d5-767fa9a4ced2",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get project collection, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
-									"",
 									"var project_name = pm.environment.get(\"project_name\") ",
 									"pm.test(\"find matches project: \" + project_name, function () {",
 									"    var body = JSON.parse(responseBody);",
@@ -1617,7 +2025,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "d5d30f2b-03ab-4b8d-8748-c1c4b1ef08e2",
+								"id": "1d695aba-28e8-490a-a26f-c0ca8f45bf6b",
 								"exec": [
 									"pm.environment.set(\"project_name\", \"Forge Concert Hall\");"
 								],
@@ -1646,17 +2054,16 @@
 					"response": []
 				},
 				{
-					"name": "GET RFI container ID",
+					"name": "03-GET RFI container ID",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "20772a48-4ce6-44ef-9743-e58a29d45c0b",
+								"id": "4bf326d3-8782-4716-84bc-e564d6074b01",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get project data, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
-									"",
 									"",
 									"pm.test(\"find RFI container ID \", function () {",
 									"    var body = JSON.parse(responseBody);",
@@ -1702,18 +2109,19 @@
 					"response": []
 				},
 				{
-					"name": "Get project user",
+					"name": "04-Get project user",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "c5928363-2972-465f-9950-d2ad748731d6",
+								"id": "7cb6b8c7-8afc-4c04-9cf6-001660b8f3f4",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get project users, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"var one_user_email = pm.environment.get(\"one_user_email\");",
+									"",
+									"var one_user_email = pm.environment.get(\"one_creator_email\");",
 									"",
 									"pm.test(\"find one user id by email: \" + one_user_email, function () {",
 									"    var body = JSON.parse(responseBody);",
@@ -1734,9 +2142,9 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "decf69a0-ab9c-4f16-8a04-b627a94f5388",
+								"id": "f57926f0-afba-4589-a9d9-68d911714ede",
 								"exec": [
-									"pm.environment.set(\"one_user_email\", \"devtechchina@hotmail.com\");"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1779,14 +2187,14 @@
 					"response": []
 				},
 				{
-					"name": "GET project file folder id",
+					"name": "05-GET project file folder id",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "edece69a-4c5f-4227-880c-9d7120ec64eb",
+								"id": "bfcd7172-8d05-4940-8c5d-fd9adbfb8497",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get project top folders, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
@@ -1809,38 +2217,32 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_domain}}/data/v1/projects/{{project_id_with_b}}/folders/{{root_folder_id}}/contents?filter[type]=folders",
+							"raw": "{{base_domain}}/project/v1/hubs/{{hub_id_with_b}}/projects/{{project_id_with_b}}/topFolders",
 							"host": [
 								"{{base_domain}}"
 							],
 							"path": [
-								"data",
+								"project",
 								"v1",
+								"hubs",
+								"{{hub_id_with_b}}",
 								"projects",
 								"{{project_id_with_b}}",
-								"folders",
-								"{{root_folder_id}}",
-								"contents"
-							],
-							"query": [
-								{
-									"key": "filter[type]",
-									"value": "folders"
-								}
+								"topFolders"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "GET one file lineage URN",
+					"name": "06-GET one file lineage URN-Assume at least one file is available",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "79169bee-3a63-4014-bdf4-390cc9492857",
+								"id": "9253f9b7-2660-409a-b334-43160e444023",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get one folder contents, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
@@ -1884,19 +2286,20 @@
 									"value": "items"
 								}
 							]
-						}
+						},
+						"description": "Assume at least one file is available. The script will pick the firs file urn"
 					},
 					"response": []
 				},
 				{
-					"name": "POST one RFI with attachment",
+					"name": "07-POST one RFI  with [Draft] submitted",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "a5ff887c-68a5-4436-9fb6-f15edc2238db",
+								"id": "fe11081d-f232-4ee3-af50-3d9c54989bc2",
 								"exec": [
-									"pm.test(\"Status code is 201\", function () {",
+									"pm.test(\"Create RFI, Status code is 201\", function () {",
 									"    pm.response.to.have.status(201);",
 									"});",
 									" ",
@@ -1921,7 +2324,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "49eae14d-d2d3-4992-b4ca-be271c3ff510",
+								"id": "a54e7154-5413-4afa-aee9-8d75d6ea768b",
 								"exec": [
 									"var currentDate = new Date()",
 									"var commentDateStr = currentDate.getFullYear() ",
@@ -1949,7 +2352,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"status\": \"submitted\",\n        \"title\": \"create RFI by API, assign to {{one_user_name}} on {{rfi_title_date}} with attachment\",\n        \"question\": \"Will we survive with API?\",\n        \"dueDate\": \"{{due_date}}\",\n        \"assignedTo\": \"{{one_user_autodeskId}}\",\n        \"commentsAttributes\": [\n          {\n            \"body\": \"attach attachment when creating RFI {{rfi_comment_date}}\"\n          }\n        ],\n        \"attachmentsAttributes\": [\n          { \n        \t\"name\": \"{{rfi_existing_file_displayname}}\",\n        \t\"urn\": \"{{rfi_existing_file_urn}}\",\n        \t\"urnType\": \"dm\" \n           }\n        ]\n }"
+							"raw": "{\n        \"status\": \"submitted\",\n        \"title\": \"create RFI by API, assign to {{one_user_name}} on {{rfi_title_date}} with attachment\",\n        \"question\": \"Will we survive with API?\",\n        \"dueDate\": \"{{due_date}}\",\n        \"assignedTo\": \"{{one_user_autodeskId}}\"\n        \n }"
 						},
 						"url": {
 							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis",
@@ -1969,257 +2372,14 @@
 					"response": []
 				},
 				{
-					"name": "GET hidden Photo folder id",
+					"name": "08-POST new attachment for RFI",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "1b8c5721-ef0d-4825-ad05-66122eb28383",
+								"id": "5e559ab1-3175-4fa3-b798-f7b8d907f486",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"",
-									"pm.test(\"find Photo folder ID \", function () {",
-									"    var body = JSON.parse(responseBody);",
-									"    var find = body.data.find(d=>d.attributes.displayName == \"Photos\")",
-									"",
-									"    pm.expect(find).not.eq(undefined); ",
-									"    pm.environment.set(\"photos_folder_id\", find.id); ",
-									"    ",
-									"});",
-									"",
-									"pm.test(\"find Root Folder ID \", function () {",
-									"    var body = JSON.parse(responseBody);",
-									"    var find = body.data.relationships.rootFolder.data.id  ",
-									"",
-									"    pm.expect(find).not.eq(undefined); ",
-									"    pm.environment.set(\"root_folder_id\", find); ",
-									"    ",
-									"});",
-									" "
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_domain}}/data/v1/projects/{{project_id_with_b}}/folders/{{root_folder_id}}/contents?filter[type]=folders",
-							"host": [
-								"{{base_domain}}"
-							],
-							"path": [
-								"data",
-								"v1",
-								"projects",
-								"{{project_id_with_b}}",
-								"folders",
-								"{{root_folder_id}}",
-								"contents"
-							],
-							"query": [
-								{
-									"key": "filter[type]",
-									"value": "folders"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create storage in Photos folder",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "96034729-cbf6-4cbe-96bd-a450f4f03331",
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {",
-									"    pm.response.to.have.status(201);",
-									"});",
-									"",
-									"",
-									"pm.test(\"get new file URN \", function () {",
-									"    var body = JSON.parse(responseBody);",
-									"    var find = body.data",
-									"",
-									"    pm.expect(find).not.eq(undefined); ",
-									"    rfi_local_file_urn = find.id",
-									"    pm.environment.set(\"rfi_local_file_urn\", find.id);",
-									"    var rfi_local_file_guid = rfi_local_file_urn.split(\"/\")[1]",
-									"    pm.environment.set(\"rfi_local_file_guid\", rfi_local_file_guid); ",
-									"",
-									"    ",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "be3b31e7-0cc7-458f-a5d3-d8f586e5b2d6",
-								"exec": [
-									"var currentDate = new Date()",
-									"var newfileDateStr = \"file-name-from-local-file\" + currentDate.getFullYear() ",
-									"                +\"-\" + ((\"0\" + (currentDate.getMonth()+1)).slice(-2) )",
-									"                + \"-\" +  (\"0\" + currentDate.getDate()).slice(-2) ",
-									"                + \"T\" +(\"0\" + currentDate.getHours()).slice(-2) ",
-									"                + \"-\" + (\"0\" + currentDate.getMinutes()).slice(-2) ",
-									"                + \"-\" + (\"0\" + currentDate.getSeconds()).slice(-2) ",
-									"",
-									"pm.environment.set(\"new_file_name\", newfileDateStr);",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/vnd.api+json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"jsonapi\": { \"version\": \"1.0\" },\n  \"data\": {\n    \"type\": \"objects\",\n    \"attributes\": { \"name\": \"{{new_file_name}}\" },\n    \"relationships\": {\n      \"target\": {\n        \"data\": {\n          \"type\": \"folders\",\n          \"id\": \"{{photos_folder_id}}\"\n        }\n      }\n    }\n  }\n}"
-						},
-						"url": {
-							"raw": "{{base_domain}}/data/v1/projects/{{project_id_with_b}}/storage",
-							"host": [
-								"{{base_domain}}"
-							],
-							"path": [
-								"data",
-								"v1",
-								"projects",
-								"{{project_id_with_b}}",
-								"storage"
-							]
-						},
-						"description": "https://developer.autodesk.com/api/view-and-data-api/#create-an-oauth2-token\n"
-					},
-					"response": []
-				},
-				{
-					"name": "Upload local file to Photos folder",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "022a40ea-c28c-4f94-8455-552a83ce8f20",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									" ",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "file",
-							"file": {
-								"src": ""
-							}
-						},
-						"url": {
-							"raw": "{{base_domain}}/oss/v2/buckets/wip.dm.prod/objects/{{rfi_local_file_guid}}",
-							"host": [
-								"{{base_domain}}"
-							],
-							"path": [
-								"oss",
-								"v2",
-								"buckets",
-								"wip.dm.prod",
-								"objects",
-								"{{rfi_local_file_guid}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Post new item to Photos folder",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "ec450a8d-6ec5-4109-8bf4-77f0639613d3",
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {",
-									"    pm.response.to.have.status(201);",
-									"});",
-									"",
-									"",
-									"pm.test(\"get new file lineage URN \", function () {",
-									"    var body = JSON.parse(responseBody);",
-									"    var find = body.data",
-									"",
-									"    pm.expect(find).not.eq(undefined); ",
-									"    pm.environment.set(\"rfi_local_file_urn\", find.id);",
-									"    pm.environment.set(\"rfi_local_file_displayname\", find.attributes.displayName);  ",
-									"    ",
-									"});",
-									" "
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/vnd.api+json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"jsonapi\": {\n    \"version\": \"1.0\"\n  },\n  \"data\": {\n    \"type\": \"items\",\n    \"attributes\": {\n      \"displayName\": \"{{new_file_name}}\",\n      \"extension\": {\n        \"type\": \"items:autodesk.bim360:File\",\n        \"version\": \"1.0\"\n      }\n    },\n    \"relationships\": {\n      \"tip\": {\n        \"data\": {\n          \"type\": \"versions\",\n          \"id\": \"1\"\n        }\n      },\n      \"parent\": {\n        \"data\": {\n          \"type\": \"folders\",\n          \"id\": \"{{photos_folder_id}}\"\n        }\n      }\n    }\n  },\n  \"included\": [\n    {\n      \"type\": \"versions\",\n      \"id\": \"1\",\n      \"attributes\": {\n        \"name\": \"{{new_file_name}}\",\n        \"extension\": {\n          \"type\": \"versions:autodesk.bim360:File\",\n          \"version\": \"1.0\"\n        }\n      },\n      \"relationships\": {\n        \"storage\": {\n          \"data\": {\n            \"type\": \"objects\",\n            \"id\": \"{{rfi_local_file_urn}}\"\n          }\n        }\n      }\n    }\n  ]\n}"
-						},
-						"url": {
-							"raw": "{{base_domain}}/data/v1/projects/{{project_id_with_b}}/items",
-							"host": [
-								"{{base_domain}}"
-							],
-							"path": [
-								"data",
-								"v1",
-								"projects",
-								"{{project_id_with_b}}",
-								"items"
-							]
-						},
-						"description": "https://developer.autodesk.com/api/view-and-data-api/#create-an-oauth2-token\n"
-					},
-					"response": []
-				},
-				{
-					"name": "POST new attachment for RFI",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "f7647d63-9678-4291-8daa-bac7ff82389d",
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {",
+									"pm.test(\"POST new attachment for RFI,Status code is 201\", function () {",
 									"    pm.response.to.have.status(201);",
 									"});",
 									""
@@ -2239,7 +2399,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"name\": \"{{rfi_local_file_displayname}}\",\n        \"urn\": \"{{rfi_local_file_urn}}\",\n        \"urnType\": \"dm\"\n }"
+							"raw": "{\n        \"name\": \"{{rfi_existing_file_displayname}}\",\n        \"urn\": \"{{rfi_existing_file_urn}}\",\n        \"urnType\": \"dm\"\n }"
 						},
 						"url": {
 							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis/{{one_rfi_id}}/attachments",
@@ -2261,14 +2421,14 @@
 					"response": []
 				},
 				{
-					"name": "GET attachments",
+					"name": "09-GET attachments",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "90de054c-cef4-439a-9d45-074cc5abfca3",
+								"id": "9615006c-7040-4aa8-8875-c9e0c3d710e3",
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
+									"pm.test(\"Get RFI attachment, Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
@@ -2308,14 +2468,14 @@
 					"response": []
 				},
 				{
-					"name": "DELETE attachments",
+					"name": "10-DELETE attachments",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "e670938b-cabf-4ff0-b02a-d8a400a1af17",
+								"id": "7775808c-6caf-4c5f-b03a-77a8d3affd0d",
 								"exec": [
-									"pm.test(\"Status code is 204\", function () {",
+									"pm.test(\"Delete attachment, Status code is 204\", function () {",
 									"    pm.response.to.have.status(204);",
 									"});"
 								],
@@ -2326,6 +2486,10 @@
 					"request": {
 						"method": "DELETE",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis/{{one_rfi_id}}/attachments/{{rfi_one_attachment_id}}",
 							"host": [
@@ -2350,476 +2514,9 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "folder contents - root folder - 2 legged token？",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_domain}}/data/v1/projects/{{project_id_with_b}}/folders/{{root_folder_id}}/contents",
-					"host": [
-						"{{base_domain}}"
-					],
-					"path": [
-						"data",
-						"v1",
-						"projects",
-						"{{project_id_with_b}}",
-						"folders",
-						"{{root_folder_id}}",
-						"contents"
-					],
-					"query": [
-						{
-							"key": "filter[type]",
-							"value": "folders",
-							"disabled": true
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "project TOP FOLDERS",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_domain}}/project/v1/hubs/{{hub_id_with_b}}/projects/{{project_id_with_b}}/topFolders",
-					"host": [
-						"{{base_domain}}"
-					],
-					"path": [
-						"project",
-						"v1",
-						"hubs",
-						"{{hub_id_with_b}}",
-						"projects",
-						"{{project_id_with_b}}",
-						"topFolders"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "folder contents - One Folder Copy",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_domain}}/data/v1/projects/{{project_id_with_b}}/folders/{{one_folder_id}}/contents",
-					"host": [
-						"{{base_domain}}"
-					],
-					"path": [
-						"data",
-						"v1",
-						"projects",
-						"{{project_id_with_b}}",
-						"folders",
-						"{{one_folder_id}}",
-						"contents"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Project Users-Beta",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "0ff2bba2-94a7-49aa-bf07-be05f3f0244f",
-						"exec": [
-							"var body = JSON.parse(responseBody);",
-							"",
-							"var oneuser = body[\"results\"].find(d=>d.email==\"devtechchina@hotmail.com\")",
-							"pm.environment.set(\"one_user_autodeskId\", oneuser.autodeskId)"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"disabled": true
-					},
-					{
-						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
-					},
-					{
-						"key": "User-Id",
-						"type": "text",
-						"value": "200902260532621",
-						"disabled": true
-					}
-				],
-				"url": {
-					"raw": "{{base_domain}}/bim360/admin/v1/projects/{{project_id_with_b}}/users",
-					"host": [
-						"{{base_domain}}"
-					],
-					"path": [
-						"bim360",
-						"admin",
-						"v1",
-						"projects",
-						"{{project_id_with_b}}",
-						"users"
-					]
-				},
-				"description": "https://developer.autodesk.com/api/view-and-data-api/#create-an-oauth2-token\n"
-			},
-			"response": []
-		},
-		{
-			"name": "GET Custom Identifier",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis/custom-identifier",
-					"host": [
-						"{{base_domain}}"
-					],
-					"path": [
-						"bim360",
-						"rfis",
-						"v2",
-						"containers",
-						"{{rfi_container_id}}",
-						"rfis",
-						"custom-identifier"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "GET Custom Identifier validate",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"customIdentifier\": \"353\"\n}"
-				},
-				"url": {
-					"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis/custom-identifier:validate",
-					"host": [
-						"{{base_domain}}"
-					],
-					"path": [
-						"bim360",
-						"rfis",
-						"v2",
-						"containers",
-						"{{rfi_container_id}}",
-						"rfis",
-						"custom-identifier:validate"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "POST RFI",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"status\": \"submitted\",\n  \"customIdentifier\": \"123\",\n  \"title\": \"create RFI by v2 API without attachment and comments\",\n  \"question\": \"create RFI by v2 API without attachment and comments\",\n  \"assignedTo\": \"200902260532621\",\n  \"linkedDocument\": \"urn:adsk.wipprod:dm.lineage:44qraW7CQDasfGi82ZWn4g\",\n  \"linkedDocumentVersion\": 3,\n   \"dueDate\": \"2020-03-12T13:06:39.216Z\",\n  \"costImpact\": null,\n  \"scheduleImpact\": null,\n  \"priority\": null,\n  \"discipline\": [\n    \"Architectural\"\n  ],\n  \"category\": [\n    \"Code Compliance\"\n  ],\n  \"reference\": \"ID-1234\",\n  \"sheetMetadata\": {},\n    \n  \"pushpinAttributes\": {\n    \"externalId\": \"string\",\n    \"location\": {},\n    \"objectId\": \"string\",\n    \"type\": \"TwoDRasterPushpin\",\n    \"viewerState\": {},\n    \"attributesVersion\": 0\n  } \n}"
-				},
-				"url": {
-					"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis",
-					"host": [
-						"{{base_domain}}"
-					],
-					"path": [
-						"bim360",
-						"rfis",
-						"v2",
-						"containers",
-						"{{rfi_container_id}}",
-						"rfis"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "POST RFI No Pushpin",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"status\": \"submitted\",\n  \"customIdentifier\": \"123\",\n  \"title\": \"create RFI by v2 API without pushpin,comment and attachment\",\n  \"question\": \"create RFI by v2 API without pushpin,comment and attachment\",\n  \"assignedTo\": \"200902260532621\",\n  \n   \"dueDate\": \"2020-03-12T13:06:39.216Z\",\n  \"costImpact\": null,\n  \"scheduleImpact\": null,\n  \"priority\": null \n}"
-				},
-				"url": {
-					"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis",
-					"host": [
-						"{{base_domain}}"
-					],
-					"path": [
-						"bim360",
-						"rfis",
-						"v2",
-						"containers",
-						"{{rfi_container_id}}",
-						"rfis"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "POST RFI Comments",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t  \"body\": \"test by RFI v2 POST RFI Comments\"\n\n}"
-				},
-				"url": {
-					"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis/{{one_rfi_id}}/comments",
-					"host": [
-						"{{base_domain}}"
-					],
-					"path": [
-						"bim360",
-						"rfis",
-						"v2",
-						"containers",
-						"{{rfi_container_id}}",
-						"rfis",
-						"{{one_rfi_id}}",
-						"comments"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "POST RFI Attachments",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"name\": \"common_member_719.png\",\n      \"urn\": \"urn:adsk.objects:os.object:wip.dm.prod/86e9f06e-4c43-4ed1-8413-c1e995d35aaa.png\",\n      \"urnType\": \"dm\"\n}"
-				},
-				"url": {
-					"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis/{{one_rfi_id}}/attachments",
-					"host": [
-						"{{base_domain}}"
-					],
-					"path": [
-						"bim360",
-						"rfis",
-						"v2",
-						"containers",
-						"{{rfi_container_id}}",
-						"rfis",
-						"{{one_rfi_id}}",
-						"attachments"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "PATCH RFI - V1",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "Content-Type",
-						"type": "text",
-						"value": "application/vnd.api+json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "\n{\n        \"data\": {\n          \"id\": \"{{one_rfi_id}}\",\n          \"type\": \"rfis\",\n          \"attributes\": {\n             \"assigned_to\": \"BVE5MB3YCEMF\"\n             \n          }\n        }\n      }"
-				},
-				"url": {
-					"raw": "{{base_domain}}/bim360/rfis/v1/containers/{{rfi_container_id}}/rfis/{{one_rfi_id}}",
-					"host": [
-						"{{base_domain}}"
-					],
-					"path": [
-						"bim360",
-						"rfis",
-						"v1",
-						"containers",
-						"{{rfi_container_id}}",
-						"rfis",
-						"{{one_rfi_id}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "PATCH RFI - V1 Copy",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "\n{\n   \"status\": \"open\",\n   \n  \"assignedTo\": \"BVE5MB3YCEMF\"\n        \n }"
-				},
-				"url": {
-					"raw": "{{base_domain}}/bim360/rfis/v2/containers/{{rfi_container_id}}/rfis/{{one_rfi_id}}",
-					"host": [
-						"{{base_domain}}"
-					],
-					"path": [
-						"bim360",
-						"rfis",
-						"v2",
-						"containers",
-						"{{rfi_container_id}}",
-						"rfis",
-						"{{one_rfi_id}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "OAuth 2LO",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "fc4336d1-ce90-414d-a175-b4b7caac6ed1",
-						"exec": [
-							"tests [\"Status code is 200\"] =responseCode.code === 200 ;",
-							"tests [\"Content-Type is present\"] =responseHeaders.hasOwnProperty (\"Content-Type\") ;",
-							"tests [\"Content-Type is json\"] =postman.getResponseHeader (\"Content-Type\").indexOf (\"application/json\") !== -1 ;",
-							"",
-							"var data =JSON.parse (responseBody) ;",
-							"tests [\"Bearer ok\"] =data.access_token !== '' ;",
-							"",
-							"postman.setEnvironmentVariable (\"access_token\", data.access_token) ;",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "accessToken",
-							"value": "access_token",
-							"type": "string"
-						},
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/x-www-form-urlencoded"
-					}
-				],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "client_id",
-							"value": "{{client_id}}",
-							"type": "text"
-						},
-						{
-							"key": "client_secret",
-							"value": "{{client_secret}}",
-							"type": "text"
-						},
-						{
-							"key": "grant_type",
-							"value": "client_credentials",
-							"type": "text"
-						},
-						{
-							"key": "scope",
-							"value": "data:read data:write",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "{{base_domain}}/authentication/v1/authenticate",
-					"host": [
-						"{{base_domain}}"
-					],
-					"path": [
-						"authentication",
-						"v1",
-						"authenticate"
-					]
-				},
-				"description": "https://developer.autodesk.com/api/view-and-data-api/#create-an-oauth2-token\n"
-			},
-			"response": []
+			"name": "(TODO) Create RFI, add local file as attachment, and delete attachment",
+			"item": [],
+			"protocolProfileBehavior": {}
 		}
 	],
 	"auth": {
@@ -2827,7 +2524,7 @@
 		"oauth2": [
 			{
 				"key": "accessToken",
-				"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6Imp3dF9zeW1tZXRyaWNfa2V5In0.eyJzY29wZSI6WyJkYXRhOnJlYWQiLCJhY2NvdW50OnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiXSwiY2xpZW50X2lkIjoiTjlxWEswOFBZdHRpY1dUR3NxaEJ1SjNnRTJKSTIzNEoiLCJncmFudF9pZCI6IlBkR0U1Z3FBOUtDcjkxaHRLU0FoNGFyWVRwQ3ZnS2hNIiwiYXVkIjoiaHR0cHM6Ly9hdXRvZGVzay5jb20vYXVkL2p3dGV4cDYwIiwianRpIjoieUtOR2NneGRXQWZEeHF0ZGpVQTlrTkZNSHl1azIxcGZsYmJTVE9yc1dqbGkyZVV5NmNMZTdBRUxDUlVpZ2x3byIsInVzZXJpZCI6IjIwMDkwMjI2MDUzMjYyMSIsImV4cCI6MTU4ODg1MTc2Mn0.IcYGW4v7fQ7ltzFTf6SgA8BQ355CzfBl_Fp_bP8aH34",
+				"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6Imp3dF9zeW1tZXRyaWNfa2V5In0.eyJzY29wZSI6WyJkYXRhOnJlYWQiLCJkYXRhOndyaXRlIiwiZGF0YTpjcmVhdGUiLCJhY2NvdW50OnJlYWQiXSwiY2xpZW50X2lkIjoiTjlxWEswOFBZdHRpY1dUR3NxaEJ1SjNnRTJKSTIzNEoiLCJncmFudF9pZCI6IkgzTEhUUWRHOHBEUlBLRktRUEx5YVVobXZLTG45dW1WIiwiYXVkIjoiaHR0cHM6Ly9hdXRvZGVzay5jb20vYXVkL2p3dGV4cDYwIiwianRpIjoiWWtxaDNYbFhzU3lhOU1DaEl0V0wyblE1RnVieDZtWkp3WkM4OWd6RlIydHF4UHB0YXFMMHpIdTg4QURvM1h1MiIsInVzZXJpZCI6IjIwMDkwMjI2MDUzMjYyMSIsImV4cCI6MTU5MzU5ODc5OX0.1uv1RSt61bgo0FyAG-8Fr1v6GErcVMZdbnh5KPT-pcA",
 				"type": "string"
 			},
 			{
@@ -2846,7 +2543,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "b7f582af-4dd5-468e-9364-ef41f948a579",
+				"id": "270faaed-82b0-4b84-a5cc-6a7541ec1fbc",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -2856,7 +2553,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "8e2a08f3-b869-4566-a239-062bb867efe8",
+				"id": "45052b69-4086-45c3-87a2-bf96989e9d1f",
 				"type": "text/javascript",
 				"exec": [
 					""
