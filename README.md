@@ -59,7 +59,7 @@ Postman is a popular tool that provides an easy-to-use interface to send HTTP re
 
    - Client Authentication ``Send Client credentials body``
 
-   <p align="center"><img src="../help/apiref-oauth2.png" width="800" ></p> 
+   <p align="center"><img src="./help/apiref-oauth2.png" width="800" ></p> 
  
  9. Click **Request Token**, it will direct to login Autodesk account, after it succeeds, the token will be generated. Click **Use Token**. Then, click **Update** to close the window of **Edit**
 
